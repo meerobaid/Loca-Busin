@@ -38,6 +38,7 @@ async function loadBusinesses() {
 /**
  * Fetches details for a single business and displays them on the detail page.
  */
+
 async function loadBusinessDetails() {
     const contentArea = document.getElementById('business-detail-content');
     if (!contentArea) return;
@@ -54,37 +55,28 @@ async function loadBusinessDetails() {
     try {
         const response = await fetch(`${API_BASE_URL}/businesses/${businessId}`);
         const business = await response.json();
-        
-        if (business.error) {
-             contentArea.innerHTML = `<p class="text-danger">${business.error}</p>`;
-             return;
+
+        if (!response.ok) {
+            throw new Error(business.msg || 'Business not found');
         }
 
         contentArea.innerHTML = `
-            <div class="business-banner mb-4" style="background-image: url('${business.image}');">
+            <div class="business-banner mb-4" style="background-image: url('${business.image || 'https://via.placeholder.com/1200x300'}');">
                 <h1 class="display-4">${business.name}</h1>
             </div>
             <div class="row">
                 <div class="col-md-8">
                     <h2>About Us</h2>
-                    <p>${business.description}</p>
-                    <hr>
-                    <h3>Services</h3>
-                    <ul class="list-group">
-                        ${business.services.map(service => `<li class="list-group-item d-flex justify-content-between align-items-center">
-                            ${service.name}
-                            <span class="badge bg-primary rounded-pill">$${service.price}</span>
-                        </li>`).join('')}
-                    </ul>
+                    <p>${business.description || 'No description provided.'}</p>
                 </div>
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Contact & Location</h5>
                             <p><strong>Category:</strong> ${business.category}</p>
-                            <p><strong>Address:</strong> ${business.address}</p>
-                            <p><strong>Rating:</strong> ${'★'.repeat(business.rating)}${'☆'.repeat(5 - business.rating)}</p>
-                            <a href="#" class="btn btn-primary w-100">Book an Appointment</a>
+                            <p><strong>Address:</strong> ${business.address || 'Not available'}</p>
+                            <p><strong>Phone:</strong> ${business.phone || 'Not available'}</p>
+                            <a href="#" class="btn btn-primary w-100 mt-3">Book an Appointment</a>
                         </div>
                     </div>
                 </div>
@@ -92,7 +84,7 @@ async function loadBusinessDetails() {
         `;
 
     } catch (error) {
-        contentArea.innerHTML = '<p class="text-danger">Failed to load business details.</p>';
+        contentArea.innerHTML = `<p class="text-danger">Failed to load business details.</p>`;
         console.error('Error fetching business details:', error);
     }
 }
@@ -377,6 +369,40 @@ if (editBusinessForm) {
             alert('Error: Could not update business.');
         }
     });
+}
+
+
+// --- Dynamic Navbar Logic ---
+function renderNavbar() {
+    const token = localStorage.getItem('token');
+    const navbarLinks = document.getElementById('navbar-links');
+
+    if (!navbarLinks) return;
+
+    if (token) {
+        // User is logged in
+        navbarLinks.innerHTML = `
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" id="logout-link">Logout</a></li>
+        `;
+        // Add event listener for the new logout link
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                alert('You have been logged out.');
+                window.location.href = 'index.html';
+            });
+        }
+    } else {
+        // User is logged out
+        navbarLinks.innerHTML = `
+            <li class="nav-item"><a class="nav-link" href="business-list.html">Browse Businesses</a></li>
+            <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+            <li class="nav-item"><a class="btn btn-primary ms-2" href="register.html">Sign Up</a></li>
+        `;
+    }
 }
 
 
