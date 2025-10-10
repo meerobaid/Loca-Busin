@@ -41,7 +41,7 @@ router.post('/register', async (req, res) => {
 
         jwt.sign(
             payload,
-            'mySuperSecretKey',
+             'LocaBusin_Secret_123!',
             { expiresIn: 3600 },
             (err, token) => {
                 if (err) throw err;
@@ -83,10 +83,10 @@ router.post('/login', async (req, res) => {
             },
         };
 
-        jwt.sign(
-            payload,
-            'mySuperSecretKey',
-            { expiresIn: 3600 },
+       jwt.sign(
+        payload, 
+        'LocaBusin_Secret_123!', 
+        { expiresIn: 3600 }, 
             (err, token) => {
                 if (err) throw err;
                 res.json({ token });
