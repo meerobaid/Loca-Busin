@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const authMiddleware = require('../middleware/authMiddleware');
 
 // Import the database connection pool
 const db = require('../config/db');
@@ -92,6 +93,26 @@ router.post('/login', async (req, res) => {
                 res.json({ token });
             }
         );
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET api/users/me
+// @desc    Get current user's data (protected)
+// @access  Private
+router.get('/me', authMiddleware, async (req, res) => {
+    try {
+        // The user's ID is attached to req.user by the authMiddleware
+        const sql = 'SELECT id, name, email, role FROM users WHERE id = ?';
+        const [rows] = await db.execute(sql, [req.user.id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        res.json(rows[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

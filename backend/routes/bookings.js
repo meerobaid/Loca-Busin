@@ -7,22 +7,18 @@ const authMiddleware = require('../middleware/authMiddleware');
 // @desc    Create a new booking
 // @access  Private
 router.post('/', authMiddleware, async (req, res) => {
-    const { business_id, booking_date } = req.body;
+    // 👉 Get the new 'quantity' field from the request body
+    const { business_id, booking_date, quantity } = req.body;
+    const user_id = req.user.id;
 
     try {
-        // Add a check to ensure req.user and req.user.id exist
-        if (!req.user || !req.user.id) {
-            return res.status(401).json({ msg: 'Authorization error, user ID not found in token' });
-        }
-        const user_id = req.user.id; // Get user ID from the middleware
-
-        // Simple validation
         if (!business_id || !booking_date) {
             return res.status(400).json({ msg: 'Please provide a business ID and a booking date' });
         }
 
-        const sql = 'INSERT INTO bookings (user_id, business_id, booking_date) VALUES (?, ?, ?)';
-        const [result] = await db.execute(sql, [user_id, business_id, booking_date]);
+        // 👉 Updated SQL query and parameters
+        const sql = 'INSERT INTO bookings (user_id, business_id, booking_date, quantity) VALUES (?, ?, ?, ?)';
+        const [result] = await db.execute(sql, [user_id, business_id, booking_date, quantity || 1]);
 
         res.status(201).json({ msg: 'Booking created successfully', bookingId: result.insertId });
 

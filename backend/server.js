@@ -16,6 +16,7 @@ const userRoutes = require('./routes/users');
 app.use('/api/businesses', businessRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookings', require('./routes/bookings'));
+app.use('/api/services', require('./routes/services'));
 
 // Define a simple root route
 app.get('/', (req, res) => {
