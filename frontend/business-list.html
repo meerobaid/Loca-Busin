@@ -6,32 +6,30 @@
     <title>Browse Businesses - LocaBusin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:,">
 </head>
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="index.html">LocaBusin</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul id="navbar-links" class="navbar-nav ms-auto">
-                </ul>
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">LocaBusin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul id="navbar-links" class="navbar-nav ms-auto">
+                    </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <main class="container my-5">
-        <h1 class="mb-4">Our Businesses</h1>
+        <h1 class="mb-4">Discover Local Services</h1>
+
         <div id="business-grid" class="row">
-            <div class="col-md-12">
-                <div id="business-grid" class="row">
-                    <div class="col-12 text-center">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
+            <div class="col-12 text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
         </div>
@@ -41,12 +39,13 @@
         <p>&copy; 2025 LocaBusin. Created by Obaid Ashraf & Team.</p>
     </footer>
 
-  <script src="js/app.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        renderNavbar();
-        loadBusinesses();
-    });
-</script>
+    <script src="js/app.js"></script>
+    <script>
+        // UPDATED: Call loadBusinesses directly
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar();
+            loadBusinesses(); 
+        });
+    </script>
 </body>
 </html>
