@@ -1,0 +1,12 @@
+# Security: Protect your passwords
+.env
+
+# Dependencies: Don't upload the heavy folders
+node_modules/
+
+# OS Metadata: Hidden system files
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*

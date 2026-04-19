@@ -13,7 +13,7 @@ function getCoverImage(imageField) {
     return cover.startsWith('http') ? cover : `http://localhost:5000${cover.startsWith('/') ? '' : '/'}${cover}`;
 }
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_URL = "https://loca-busin.onrender.com/api";
 
 
 function getLoggedInUserId() {
