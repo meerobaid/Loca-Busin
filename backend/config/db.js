@@ -8,6 +8,10 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD || 'obaidashraf',
     database: process.env.DB_NAME || 'locabusin',
     port: process.env.DB_PORT || 3306,
+    // CRITICAL FOR TiDB:
+    ssl: {
+        rejectUnauthorized: true
+    },
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
