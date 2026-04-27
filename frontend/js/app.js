@@ -13,9 +13,7 @@ function getCoverImage(imageField) {
     return cover.startsWith('http') ? cover : `http://localhost:5000${cover.startsWith('/') ? '' : '/'}${cover}`;
 }
 
-// const API_URL = "https://loca-busin.onrender.com/api";
-const API_URL = 'http://localhost:5000';
-
+const API_BASE_URL = 'http://localhost:5000/api';
 
 function getLoggedInUserId() {
     const token = localStorage.getItem('token');
@@ -114,6 +112,9 @@ async function loadBusinessDetails() {
         if (!response.ok) {
             throw new Error(business.msg || 'Business not found');
         }
+
+        // // This ensures we only track a visit if the business actually exists
+        // trackUserVisit(businessId);
 
         const token = localStorage.getItem('token');
 
@@ -232,6 +233,30 @@ async function loadBusinessDetails() {
     }
 }
 
+// Add the Helper Function
+async function trackUserVisit(businessId) {
+    // Check if user is logged in
+    const token = localStorage.getItem('token'); 
+    const userData = JSON.parse(localStorage.getItem('user')); 
+
+    if (!token || !userData) return; 
+
+    try {
+        await fetch(`${API_BASE_URL}/api/activity/track`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // If your route is protected
+            },
+            body: JSON.stringify({ 
+                user_id: userData.id, 
+                business_id: businessId 
+            })
+        });
+    } catch (error) {
+        console.error("Tracking Error:", error);
+    }
+}
 
 
 // ==========================================
@@ -309,8 +334,10 @@ if (loginForm) {
 
             // If login is successful, save token
             localStorage.setItem('token', data.token);
-            alert('Login successful!');
             
+            // This saves the ID, Role, and Name so the recommendation system can use them
+            localStorage.setItem('user', JSON.stringify(data.user));
+            alert('Login successful!');
             // The smart redirect "Traffic Cop"
             if (data.user.role === 'admin') {
                 window.location.href = 'admin.html'; // Send Admins to Admin Panel
@@ -1427,3 +1454,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Add this anywhere in your app.js
+async function trackUserVisit(businessId) {
+    // 1. Silent Check: If these don't exist, just stop without any errors
+    const token = localStorage.getItem('token'); 
+    const userData = JSON.parse(localStorage.getItem('user')); 
+
+    if (!token || !userData || !businessId || businessId === 'undefined') {
+        return; 
+    }
+
+    // 2. Background Task: Use a try/catch so a network error won't stop the site
+    try {
+        await fetch(`${API_BASE_URL}/activity/track`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({ 
+                user_id: userData.id, 
+                business_id: businessId 
+            })
+        });
+    } catch (error) {
+        // We log it for you, but the user never sees a problem
+        console.warn("Background tracking skipped.");
+    }
+}
+
+
+// Load Recommendations For The User
+
+async function loadRecommendations() {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    const section = document.getElementById('recommendations-section');
+    const container = document.getElementById('recommendations-container');
+
+    if (!userData || !container) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/activity/recommendations/${userData.id}`);
+        const recommended = await response.json();
+
+        // Only show the section if there are actually visits recorded
+        if (recommended.length > 0) {
+            section.style.display = 'block'; 
+            container.innerHTML = ''; // Clear previous content
+
+            recommended.forEach(business => {
+                // Reuse your existing business card HTML structure here
+                container.innerHTML += `
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">${business.name}</h5>
+                                <p class="badge bg-primary">${business.category}</p>
+                                <p class="text-muted small">You visited this ${business.visit_count} times</p>
+                                <a href="details.html?id=${business.id}" class="btn btn-outline-primary btn-sm w-100">View Again</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            }
+            else {
+             section.style.display = 'none';
+           }
+    } catch (error) {
+        console.error("Could not load recommendations:", error);
+    }
+}
+
+// When the page finishes loading, check for recommendations
+document.addEventListener('DOMContentLoaded', () => {
+    loadRecommendations();
+});
