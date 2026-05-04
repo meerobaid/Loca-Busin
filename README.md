@@ -115,10 +115,15 @@ Tracks:
 │
 ├── frontend/
 │   ├── js/app.js            # Frontend logic & API calls
+│   └──css/style.css         # Website Styling
 │   ├── index.html           # Homepage
 │   ├── owner-dashboard.html
-│   └── business-details.html
-│
+│   └── business-detail.html
+│   └── business-list.html
+│   └── login.html
+│   └── admin.html       
+│   └── register.html        
+│   └── dashboard.html      
 └── .env.example             # Environment variables template
 ```
 
