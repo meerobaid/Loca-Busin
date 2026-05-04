@@ -1,92 +1,214 @@
-LocaBusin - Local Business Booking System
+# LocaBusin - Local Business Booking System
+
 LocaBusin is a full-stack web application designed to connect local customers with businesses. It features a robust booking management system with real-time capacity tracking, user role-based dashboards, and a review system.
 
-🚀 Features
-Dual User Roles: Separate interfaces for Customers (to browse and book) and Business Owners (to manage listings and appointments).
+---
 
-Smart Capacity Logic: Prevents overbooking by calculating real-time availability based on the SUM of quantities for specific dates.
+## 🚀 Features
 
-Booking Management: Owners can Confirm or Cancel bookings to manage their schedule and dynamically free up capacity.
+### 👥 Dual User Roles
+Separate interfaces for:
+- **Customers** → Browse and book businesses
+- **Business Owners** → Manage listings and appointments
 
-Review System: Customers can leave 1-5 star ratings and comments on business profiles.
+### 🧠 Smart Capacity Logic
+Prevents overbooking by calculating real-time availability using the **SUM of booking quantities** for specific dates.
 
-Dynamic Image Gallery: Support for multiple business images with a functional preview gallery and banner switching.
+### 📅 Booking Management
+Business owners can:
+- Confirm bookings
+- Cancel bookings
+- Dynamically free up capacity
 
-🧠 Capacity Validation Logic:  The system ensures business integrity through a multi-step check:
+### ⭐ Review System
+Customers can:
+- Leave ratings (1–5 stars)
+- Add comments on business profiles
 
-Aggregation: It calculates the SUM(quantity) of all existing bookings that are NOT 'Cancelled' for a specific date.
+### 🖼️ Dynamic Image Gallery
+- Multiple business images
+- Preview gallery
+- Banner image switching
 
-Comparison: It adds the new requested quantity to that sum.
+---
 
-Prevention: If the total exceeds the business's total_capacity, the backend returns a 400 Bad Request error, preventing the database entry.
+# 🧠 Capacity Validation Logic
 
-🛠️ Tech Stack
-Frontend: HTML5, CSS3 (Bootstrap 5), JavaScript (Vanilla ES6).
+The system ensures booking integrity through a multi-step validation process:
 
-Backend: Node.js, Express.js.
+### 1️⃣ Aggregation
+Calculates the `SUM(quantity)` of all bookings that are **NOT Cancelled** for a selected date.
 
-Database: MySQL.
+### 2️⃣ Comparison
+Adds the newly requested quantity to the existing total.
 
-Authentication: JSON Web Tokens (JWT) with secure password hashing (Bcrypt).
+### 3️⃣ Prevention
+If the total exceeds the business `total_capacity`, the backend returns:
 
-Middleware: Custom Auth middleware for role-based access control (RBAC).
+```http
+400 Bad Request
+```
 
-📁 Database Schema
+This prevents overbooking and invalid database entries.
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+- HTML5
+- CSS3
+- Bootstrap 5
+- Vanilla JavaScript (ES6)
+
+## Backend
+- Node.js
+- Express.js
+
+## Database
+- MySQL
+
+## Authentication
+- JSON Web Tokens (JWT)
+- Bcrypt Password Hashing
+
+## Middleware
+- Custom Authentication Middleware
+- Role-Based Access Control (RBAC)
+
+---
+
+# 📁 Database Schema
+
 The system uses three core tables:
 
-Users: Stores credentials and roles (owner vs customer).
+## Users
+Stores:
+- User credentials
+- Roles (`owner` / `customer`)
 
-Businesses: Stores business details, contact info, and total capacity limits.
+## Businesses
+Stores:
+- Business details
+- Contact information
+- Total capacity limits
 
-Bookings: Tracks business IDs, user IDs, group quantities, and statuses (Pending, Confirmed, Cancelled).
+## Bookings
+Tracks:
+- Business IDs
+- User IDs
+- Group quantities
+- Booking statuses:
+  - Pending
+  - Confirmed
+  - Cancelled
 
-📂 Project Structure
+---
 
-Plaintext
+# 📂 Project Structure
+
+```plaintext
 ├── backend/
-│   ├── routes/          # API Route definitions (bookings, users, businesses)
-│   ├── middleware/      # JWT Authentication & Authorization
-│   └── server.js        # Entry point
+│   ├── routes/              # API Route definitions
+│   ├── middleware/          # JWT Authentication & Authorization
+│   └── server.js            # Backend entry point
+│
 ├── frontend/
-│   ├── js/app.js        # Main frontend logic & API calls
-│   ├── index.html       # Homepage
+│   ├── js/app.js            # Frontend logic & API calls
+│   ├── index.html           # Homepage
 │   ├── owner-dashboard.html
 │   └── business-details.html
-└── .env.example         # Template for environment variables
+│
+└── .env.example             # Environment variables template
+```
 
+---
 
-⚙️ Installation & Setup
+# ⚙️ Installation & Setup
 
-📋 Prerequisites
-Node.js (v14 or higher)
-MySQL Server
-A modern web browser
+## 📋 Prerequisites
 
-1. Clone the Repository
-2. 
-Bash
+Make sure you have installed:
+
+- Node.js (v14 or higher)
+- MySQL Server
+- A modern web browser
+
+---
+
+## 1️⃣ Clone the Repository
+
+```bash
 git clone https://github.com/yourusername/locabusin.git
 cd locabusin
-3. Install Dependencies
-Bash
+```
+
+---
+
+## 2️⃣ Install Dependencies
+
+```bash
 npm install
-4. Database Configuration
-Create a MySQL database named locabusin_db.
+```
 
-Import the provided database.sql file or manually create tables based on the schema provided above.
+---
 
-4. Environment Variables
-Create a .env file in the root directory and add your credentials:
-Code snippet
+## 3️⃣ Database Configuration
+
+Create a MySQL database named:
+
+```sql
+locabusin_db
+```
+
+Then:
+- Import the `database.sql` file
+- OR manually create tables using the schema
+
+---
+
+## 4️⃣ Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=yourpassword
 DB_NAME=locabusin_db
 JWT_SECRET=your_super_secret_key
+```
 
-5. Run the Server
-Bash
-# Start the production server
+---
+
+## 5️⃣ Run the Server
+
+### Production
+
+```bash
 npm start
-# Or start with nodemon for development
+```
+
+### Development Mode
+
+```bash
 npm run dev
+```
+
+---
+
+# ✅ Future Improvements
+
+- Online payments integration
+- Google Maps integration
+- Real-time notifications
+- Advanced analytics dashboard
+- Business search filters
+
+---
+
+# 👨‍💻 Author
+
+Developed by **Obaid Ashraf And His Team Members**
+
+---
