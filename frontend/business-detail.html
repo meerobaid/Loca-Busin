@@ -75,5 +75,9 @@
         loadBusinessDetails();
     });
 </script>
+<script>
+  // Simple trick to prevent past dates
+  document.getElementById('booking-date').min = new Date().toISOString().split("T")[0];
+</script>
 </body>
 </html>

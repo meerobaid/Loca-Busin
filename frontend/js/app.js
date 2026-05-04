@@ -113,9 +113,6 @@ async function loadBusinessDetails() {
             throw new Error(business.msg || 'Business not found');
         }
 
-        // // This ensures we only track a visit if the business actually exists
-        // trackUserVisit(businessId);
-
         const token = localStorage.getItem('token');
 
         // --- IMAGE ARRAY LOGIC ---
@@ -131,7 +128,6 @@ async function loadBusinessDetails() {
             }
         }
 
-        // Set the main banner URL from the first image
         if (imageArray.length > 0) {
             const path = imageArray[0];
             const cleanPath = path.startsWith('/') ? path : `/${path}`;
@@ -155,24 +151,26 @@ async function loadBusinessDetails() {
             galleryHTML += '</div>';
         }
 
+        // --- UPDATED BOOKING FORM (Merged Quantity Fields) ---
         const bookingFormHTML = `
-             <h5 class="card-title">Book an Appointment</h5>
+             <h5 class="card-title fw-bold">Book an Appointment</h5>
              <form id="booking-form" data-business-id="${business.id}">
                  <div class="mb-3">
                      <label for="booking-date" class="form-label">Select Date & Time</label>
                      <input type="datetime-local" class="form-control" id="booking-date" required>
                  </div>
                  <div class="mb-3">
-                     <label for="quantity" class="form-label">Quantity</label>
-                     <input type="number" class="form-control" id="quantity" value="1" min="1" required>
-                 </div>
-                 <button type="submit" class="btn btn-primary w-100">Confirm Booking</button>
+                    <label for="booking-quantity" class="form-label fw-bold">Number of People</label>
+                    <input type="number" id="booking-quantity" class="form-control" value="1" min="1" max="${business.capacity || 20}" required>
+                    <small class="text-muted">Max spots available: ${business.capacity || 'Contact owner'}</small>
+                </div>
+                 <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Confirm Booking</button>
              </form>
          `;
 
         const reviewFormHTML = `
              <hr>
-             <h3 class="mt-4">Write a Review ✍️</h3>
+             <h3 class="mt-4 fw-bold">Write a Review ✍️</h3>
              <form id="review-form">
                  <div class="mb-3">
                      <label for="rating" class="form-label">Rating</label>
@@ -187,7 +185,7 @@ async function loadBusinessDetails() {
                  </div>
                  <div class="mb-3">
                      <label for="comment" class="form-label">Comment</label>
-                     <textarea class="form-control" id="comment" rows="3"></textarea>
+                     <textarea class="form-control" id="comment" rows="3" placeholder="Share your experience..."></textarea>
                  </div>
                  <button type="submit" class="btn btn-primary">Submit Review</button>
              </form>
@@ -203,10 +201,9 @@ async function loadBusinessDetails() {
                 <div class="col-md-8">
                     <h2 class="fw-bold">About Us</h2>
                     <p class="lead">${business.description || 'No description provided.'}</p>
-                    
-                    ${galleryHTML} <h2 class="mt-5 fw-bold">Recent Reviews</h2>
+                    ${galleryHTML} 
+                    <h2 class="mt-5 fw-bold">Recent Reviews</h2>
                     <div id="reviews-list" class="mb-4"></div>
-
                     ${token ? reviewFormHTML : '<p class="mt-4 p-3 bg-light rounded text-center"><a href="login.html">Log in</a> to write a review.</p>'}
                 </div>
                 <div class="col-md-4">
@@ -224,6 +221,15 @@ async function loadBusinessDetails() {
                 </div>
             </div>
         `;
+
+        // --- NEW LOGIC: PREVENT PAST DATES & SET MAX CAPACITY ---
+        const datePicker = document.getElementById('booking-date');
+        if (datePicker) {
+            // Sets the minimum selectable date to right now
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            datePicker.min = now.toISOString().slice(0, 16);
+        }
 
         loadReviews(businessId);
 
@@ -701,6 +707,9 @@ if (detailContent) {
 
             const business_id = event.target.dataset.businessId;
             const booking_date = document.getElementById('booking-date').value;
+            // 1. Grab the quantity from the input field
+            const quantityInput = document.getElementById('booking-quantity');
+            const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
 
             try {
                 const response = await fetch(`${API_BASE_URL}/bookings`, {
@@ -709,16 +718,19 @@ if (detailContent) {
                         'Content-Type': 'application/json',
                         'x-auth-token': token
                     },
-                    body: JSON.stringify({ business_id, booking_date })
+                    body: JSON.stringify({ business_id, booking_date, quantity })
                 });
 
+                const data = await response.json(); // Get the response message
+    
                 if (!response.ok) {
-                    throw new Error('Booking failed. Please try again.');
-                }
+                     // This will now catch "Bookings are full" from the backend
+                    throw new Error(data.msg || 'Booking failed');
+                 }
 
                 alert('Booking successful!');
 
-            } catch (error) {
+                } catch (error) {
                 console.error('Error creating booking:', error);
                 alert(error.message);
             }
@@ -1255,13 +1267,12 @@ if (ownerAddBusinessForm) {
 }
 
 // --- 3. LOAD BOOKINGS FOR OWNER ---
+
 async function loadOwnerBookings() {
     const tbody = document.getElementById('owner-bookings-tbody');
-    const bookingsView = document.getElementById('owner-bookings-view');
-    
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Loading Data...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Loading Data...</td></tr>';
 
     try {
         const token = localStorage.getItem('token');
@@ -1275,60 +1286,86 @@ async function loadOwnerBookings() {
         tbody.innerHTML = '';
 
         if (!bookings || bookings.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No bookings found.</td></tr>';
-        } else {
-            bookings.forEach(booking => {
-                const date = booking.booking_date ? new Date(booking.booking_date).toLocaleDateString() : 'N/A';
-                const status = (booking.status || 'pending').toLowerCase();
-                let badgeClass = status === 'confirmed' ? 'bg-success' : (status === 'cancelled' ? 'bg-danger' : 'bg-warning text-dark');
-
-                const actions = (status === 'pending') ? `
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-success" onclick="updateBookingStatus(${booking.id}, 'confirmed')">Confirm</button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="updateBookingStatus(${booking.id}, 'cancelled')">Cancel</button>
-                    </div>
-                ` : `<span class="text-muted small">Processed</span>`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="fw-bold">👤 ${booking.customer_name || 'Guest'}</td>
-                        <td>${booking.business_name || 'Business'}</td>
-                        <td>${date}</td>
-                        <td class="text-center">${booking.quantity || 1}</td>
-                        <td><span class="badge ${badgeClass}">${status.toUpperCase()}</span></td>
-                        <td>${actions}</td>
-                    </tr>
-                `;
-            });
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No bookings found.</td></tr>';
+            return;
         }
+
+        bookings.forEach(booking => {
+            const date = booking.booking_date ? new Date(booking.booking_date).toLocaleDateString() : 'N/A';
+            const status = (booking.status || 'pending').toLowerCase();
+            const badgeClass = status === 'confirmed' ? 'bg-success' : (status === 'cancelled' ? 'bg-danger' : 'bg-warning text-dark');
+
+            // Logic: Only show buttons if the status is "pending"
+            const actions = (status === 'pending') ? `
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-success update-status-btn" data-id="${booking.id}" data-status="confirmed">Confirm</button>
+                    <button class="btn btn-sm btn-outline-danger update-status-btn" data-id="${booking.id}" data-status="cancelled">Cancel</button>
+                </div>
+            ` : `<span class="text-muted small">Processed</span>`;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td class="fw-bold">👤 ${booking.customer_name || 'Guest'}</td>
+                    <td>${booking.business_name || 'Business'}</td>
+                    <td>${date}</td>
+                    <td class="text-center">${booking.quantity || 1}</td>
+                    <td><span class="badge ${badgeClass}">${status.toUpperCase()}</span></td>
+                    <td>${actions}</td>
+                </tr>
+            `;
+        });
+
+        // ✅ FIX: Attach a single event listener to the parent (Event Delegation)
+        tbody.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('update-status-btn')) {
+                const id = e.target.dataset.id;
+                const status = e.target.dataset.status;
+                await updateBookingStatus(id, status);
+            }
+        }, { once: true }); // Prevent multiple listeners if function is called again
+
     } catch (error) {
         console.error("Load Error:", error);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-danger text-center">Error: ${error.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-danger text-center py-4">Error: ${error.message}</td></tr>`;
     }
 }
 
-// --- 4. UPDATE BOOKING STATUS ---
+
+
+// // --- 4. UPDATE BOOKING STATUS ---
+
 async function updateBookingStatus(bookingId, newStatus) {
     if (!confirm(`Are you sure you want to change this booking to ${newStatus}?`)) return;
 
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/bookings/update-status`, {
+        
+        // FIX 1: Move the ID into the URL path to match the backend router.put('/:id/status')
+        const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}/status`, {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
                 'x-auth-token': token 
             },
-            body: JSON.stringify({ bookingId, status: newStatus })
+            // FIX 2: Only send the status in the body
+            body: JSON.stringify({ status: newStatus })
         });
 
-        if (!response.ok) throw new Error('Failed to update status');
+        const data = await response.json(); // Get actual error message from server
+
+        if (!response.ok) {
+            throw new Error(data.msg || 'Failed to update status');
+        }
+
         alert(`Booking has been ${newStatus}!`);
         loadOwnerBookings();
     } catch (error) {
+        console.error('Update Error:', error);
         alert('Error: ' + error.message);
     }
 }
+
+
 
 // --- 5. DELETE BUSINESS LOGIC ---
 async function deleteOwnerBusiness(businessId) {
@@ -1530,3 +1567,23 @@ async function loadRecommendations() {
 document.addEventListener('DOMContentLoaded', () => {
     loadRecommendations();
 });
+
+
+//Handling Cancel And Confirm button
+const ownerBookingsTbody = document.getElementById('owner-bookings-tbody');
+
+if (ownerBookingsTbody) {
+    ownerBookingsTbody.addEventListener('click', async (event) => {
+        // Look for buttons with these specific classes
+        const isConfirm = event.target.classList.contains('confirm-btn');
+        const isCancel = event.target.classList.contains('cancel-btn');
+
+        if (isConfirm || isCancel) {
+            const bookingId = event.target.dataset.id;
+            const newStatus = isConfirm ? 'Confirmed' : 'Cancelled';
+            
+            // Call your update function
+            await updateBookingStatus(bookingId, newStatus);
+        }
+    });
+}
