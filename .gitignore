@@ -2,7 +2,7 @@
 .env
 
 # Dependencies: Don't upload the heavy folders
-node_modules/
+# node_modules/
 
 # OS Metadata: Hidden system files
 .DS_Store
