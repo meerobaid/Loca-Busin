@@ -9,4 +9,7 @@ node_modules/
 Thumbs.db
 
 # Logs
-npm-debug.log*
+npm-debug.log
+
+# Database Backup (Add this line)
+locabusin.sql
