@@ -13,3 +13,6 @@ npm-debug.log
 
 # Database Backup (Add this line)
 locabusin.sql
+
+# Website Images (Add this line)
+uploads/
