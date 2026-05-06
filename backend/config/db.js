@@ -1,15 +1,14 @@
 const mysql = require('mysql2');
+require('dotenv').config(); // This uses the library from node_modules
 
-// Create a connection pool. This is more efficient than creating a single connection.
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root', // Default user for XAMPP/MySQL
-    password: 'obaidashraf', // Default password for XAMPP/MySQL is empty
-    database: 'locabusin',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD, // It reads 'obaidashraf' from your hidden .env
+    database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 });
 
-// Export the promise-based pool
 module.exports = pool.promise();
