@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// NEW CODE (SERVER.JS)
-
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -37,29 +34,4 @@ const PORT = 5000; // Back to a simple, fixed port
 
 app.listen(PORT, () => {
     console.log(`Server is running locally on http://localhost:${PORT}`);
-=======
-const express = require('express');
-const cors = require('cors');
-
-const app = express();
-const PORT = 5000;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Import Routes
-const businessRoutes = require('./routes/businesses');
-
-// Use Routes
-app.use('/api/businesses', businessRoutes);
-
-// Define a simple root route
-app.get('/', (req, res) => {
-    res.send('LocaBusin API is running...');
-});
-
-app.listen(PORT, () => {
-    console.log(`Backend server is running on http://localhost:${PORT}`);
->>>>>>> e88ec8d2c8555f41dcae008e2df33ca441c45c66
 });
