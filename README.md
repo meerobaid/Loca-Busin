@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # LocaBusin - Local Business Booking System
 
 LocaBusin is a full-stack web application designed to connect local customers with businesses. It features a robust booking management system with real-time capacity tracking, user role-based dashboards, and a review system.
@@ -216,9 +215,3 @@ npm run dev
 # 👨‍💻 Author
 
 Developed by **Obaid Ashraf And His Team Members**
-
----
-=======
-# Loca-Busin
-It is a full stack website
->>>>>>> e88ec8d2c8555f41dcae008e2df33ca441c45c66
