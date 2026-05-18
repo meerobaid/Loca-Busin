@@ -15,6 +15,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const businessRoutes = require('./routes/businesses');
 const userRoutes = require('./routes/users');
 const activityRoutes = require('./routes/activity'); 
+const bookingRoutes = require('./routes/bookings');
+
 
 // Use Routes
 app.use('/api/businesses', businessRoutes);
@@ -24,6 +26,7 @@ app.use('/api/services', require('./routes/services'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/activity', activityRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Define a simple root route
 app.get('/', (req, res) => {

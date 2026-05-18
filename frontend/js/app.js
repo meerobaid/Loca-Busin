@@ -1588,3 +1588,45 @@ if (ownerBookingsTbody) {
     });
 
 }
+
+// Get bookings for a specific user
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const sql = `
+            SELECT b.booking_id, b.booking_date, b.status, b.quantity, businesses.name AS business_name 
+            FROM bookings b
+            JOIN businesses ON b.business_id = businesses.id
+            WHERE b.user_id = ?
+        `;
+        const [rows] = await db.execute(sql, [userId]);
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Simulated logged-in user ID (In a full app, this comes from login session/localStorage)
+    const currentUserId = 1; 
+
+    fetch(`http://localhost:5000/api/bookings/user/${currentUserId}`)
+        .then(response => response.json())
+        .then(bookings => {
+            const tableBody = document.getElementById('booking-rows');
+            tableBody.innerHTML = ''; // Clear static placeholder data
+
+            bookings.forEach(booking => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${booking.booking_id}</td>
+                        <td>${booking.business_name}</td>
+                        <td>${new Date(booking.booking_date).toLocaleString()}</td>
+                        <td><span class="badge bg-${booking.status === 'Confirmed' ? 'success' : 'warning'}">${booking.status}</span></td>
+                    </tr>
+                `;
+            });
+        });
+});
