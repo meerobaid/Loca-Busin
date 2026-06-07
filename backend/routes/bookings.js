@@ -160,4 +160,21 @@ router.get('/all', authMiddleware, async (req, res) => {
     }
 });
 
+// Get bookings for a specific user
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const sql = `
+            SELECT b.booking_id, b.booking_date, b.status, b.quantity, businesses.name AS business_name 
+            FROM bookings b
+            JOIN businesses ON b.business_id = businesses.id
+            WHERE b.user_id = ?
+        `;
+        const [rows] = await db.execute(sql, [userId]);
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

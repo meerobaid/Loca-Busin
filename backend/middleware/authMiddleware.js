@@ -19,11 +19,15 @@ module.exports = function (req, res, next) {
     // 3. Try to verify the token
     try {
         console.log('3. Attempting to verify token...');
-        // const decoded = jwt.verify(token, secretKey);
+        
+        // 👇 Change this line to use your uniform variable name
         const decoded = jwt.verify(token, 'LocaBusin_Secret_123!');
 
         console.log('4. SUCCESS! Decoded Payload:', decoded);
-        req.user = decoded.user;
+        
+        // Safe mapping to make sure both user object layouts are covered
+        req.user = decoded.user || { id: decoded.userId };
+        
         next();
     } catch (err) {
         console.log('--> 4. FAILED! Token verification threw an error.');
