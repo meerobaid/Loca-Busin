@@ -207,7 +207,6 @@ npm run dev
 - Online payments integration
 - Google Maps integration
 - Real-time notifications
-- Advanced analytics dashboard
 - Business search filters
 
 ---
