@@ -1,6 +1,4 @@
 // // NEW CODE OF App.js
-
-
 // function getCoverImage(imageField) {
 //     // let cover = 'https://via.placeholder.com/300x200';
 // // Replace the old URL with this completely offline string:
@@ -16,9 +14,7 @@
 
 //     return cover.startsWith('http') ? cover : `http://localhost:5000${cover.startsWith('/') ? '' : '/'}${cover}`;
 // }
-
 // const API_BASE_URL = 'http://localhost:5000/api';
-
 // function getLoggedInUserId() {
 //     const token = localStorage.getItem('token');
 //     if (!token) return null;
@@ -30,15 +26,12 @@
 //         return null;
 //     }
 // }
-
-
 // /**
 //  * Fetches all businesses from the API and displays them on the list page.
 //  */
 // async function loadBusinesses() {
 //     const grid = document.getElementById('business-grid');
 //     if (!grid) return;
-
 //     try {
 //         const response = await fetch(`${API_BASE_URL}/businesses`);
 //         const businesses = await response.json();
@@ -49,7 +42,6 @@
 //             grid.innerHTML = '<p class="text-center">No businesses found.</p>';
 //             return;
 //         }
-
 //         businesses.forEach(business => {
 //             // --- NEW UNPACKER LOGIC ---
 //             // let coverPath = 'https://via.placeholder.com/300x200'; // Default fallback
@@ -75,7 +67,6 @@
 //             const finalImageUrl = coverPath.startsWith('http') 
 //                 ? coverPath 
 //                 : `http://localhost:5000${cleanPath}`;
-
 //             const card = document.createElement('div');
 //             card.className = 'col-md-4 mb-4';
 //             card.innerHTML = `
@@ -312,8 +303,6 @@
 //         }
 //     });
 // }
-
-
 // // ==========================================
 // // --- User Login Logic ---
 // // ==========================================
@@ -362,12 +351,10 @@
 // //     });
 // // }
 
-
 // // ==========================================
 // // --- User Login Logic (Unified Strategy Fix) ---
 // // ==========================================
 // const loginForm = document.getElementById('login-form');
-
 // if (loginForm) {
 //     loginForm.addEventListener('submit', async (event) => {
 //         event.preventDefault();
@@ -389,10 +376,8 @@
 //             if (!response.ok) {
 //                 throw new Error(data.msg || 'Login failed');
 //             }
-
 //             // 1. Wipe out old session variables cleanly first
 //             localStorage.clear();
-
 //             // 2. Save uniform keys used by regular user views & bookings
 //             localStorage.setItem('token', data.token);
 //             localStorage.setItem('userId', data.user.id);
