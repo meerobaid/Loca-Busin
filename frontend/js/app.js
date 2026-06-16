@@ -5,7 +5,6 @@
 //     // let cover = 'https://via.placeholder.com/300x200';
 // // Replace the old URL with this completely offline string:
 //     let cover = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23cccccc"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="16" fill="%23666666">No Image Available</text></svg>';
-
 //     if (!imageField) return cover;
 
 //     try {
@@ -56,7 +55,6 @@
 //             // let coverPath = 'https://via.placeholder.com/300x200'; // Default fallback
 //             // Replace the old URL with this completely offline string:
 // let cover = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23cccccc"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="16" fill="%23666666">No Image Available</text></svg>';
-
 //             if (business.image) {
 //                 try {
 //                     // Try to parse the JSON array from the database
@@ -99,7 +97,6 @@
 //         console.error('Error fetching businesses:', error);
 //     }
 // }
-
 // async function loadBusinessDetails() {
 //     const contentArea = document.getElementById('business-detail-content');
 //     if (!contentArea) return;
@@ -111,7 +108,6 @@
 //         contentArea.innerHTML = '<p class="text-danger">No business ID provided.</p>';
 //         return;
 //     }
-
 //     try {
 //         const response = await fetch(`${API_BASE_URL}/businesses/${businessId}`);
 //         const business = await response.json();
